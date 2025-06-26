@@ -43,7 +43,7 @@ const createCharacter = async (req, res) => {
         }
         const existingCharacter = await Character.findOne({where: { name: name} });
         if (existingCharacter){
-            return res.status(400).json({message: 'Ya existe un personaje registrado con el nombre '${name}});
+            return res.status(400).json({ message: `Ya existe un personaje registrado con el nombre '${name}'.` });
         }
         const newCharacter = await Character.create({
             name,
