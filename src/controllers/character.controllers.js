@@ -25,7 +25,42 @@ const getCharacterById = async (req, res) => {
     }
 }
 
+const createCharacter = async (req, res) => {
+    try{
+        const {name, ki, race, gender, description} = req.body;
+        if (!name || !ki || !race || !gender) {
+            return res.status(400).json({ message: 'Los campos name, ki, race y gender son obligatorios.'});
+        }
+        if (typeof ki !== 'number' || !Number.isInteger(ki)){
+            return res.status(400).json({message: 'El campo ki debe ser un numero entero'});
+        }
+        const validGenders = ['Male', 'Female'];
+        if (!validGenders.includes(gender)){
+            return res.status(400).json({message: 'El campo gender solo puede ser "Male" o "Female".'});
+        }
+        if (description !== undefined && typeof description !== 'string'){
+            return res.status(400).json({message: 'El campo description debe ser una cadena de texto.'});
+        }
+        const existingCharacter = await Character.findOne({where: { name: name} });
+        if (existingCharacter){
+            return res.status(400).json({message: 'Ya existe un personaje registrado con el nombre '${name}});
+        }
+        const newCharacter = await Character.create({
+            name,
+            ki,
+            race,
+            gender,
+            description
+        });
+        res.status(201).json(newCharacter);
+    } catch (error){
+        console.error('Error al crear el personaje:', error);
+        res.status(500).json({message: 'Error interno del servidor al crear personaje.', error: error.message});
+    }
+};
+
 export{
     getAllCharacters,
-    getCharacterById
-}
+    getCharacterById,
+    createCharacter
+};
