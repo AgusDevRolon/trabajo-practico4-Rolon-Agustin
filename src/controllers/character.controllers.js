@@ -59,8 +59,64 @@ const createCharacter = async (req, res) => {
     }
 };
 
+ const updatecharacter = async(req, res) => {
+    try{
+        const {id} = req.params; 
+        const {name, ki, race, gender, description} = req.body;
+
+        const character = await Character-findByPk(id);
+        if (!character){
+            return res.status(404).json({message: `Presonaje con ID ${id} no encontrado.` });
+        }
+
+        if (name !== undefined){
+            if (typeof name !== 'string' || name.trim() === ''){
+                return res.status(400).json({message: 'El campo name debe ser una cadena de texto no vacia.'});
+
+            }
+
+            const existingCharacterWithName = await Character.findOne({where: {name: name}});
+            if (existingCharacterWithName && existingCharacterWithName.id !== parseInt(id)){
+                return res.status(400).json({ message: `ya existe un personaje registrado con el nombre '${name}'.`});
+            }
+        }
+
+        if (ki !== undefined){
+            if (typeof ki !=='number' || !Number.isInteger(ki)){
+                return res.status(400).json({message: 'El campo ki debe ser un numero entero.'});
+
+            }
+        }
+
+        if (race !== undefined){
+            if (typeof race !== 'string' || race.trim() === ''){
+                return res.status(400).json({message: 'El campo race debe ser una cadena de texto no vacia.'});
+            }
+        }
+
+        if (gender !== undefined){
+            const validGenders = ['Male', 'Female'];
+            if (!validGenders.includes(gender)){
+                return res.status(400).json({message: 'El campo gender solo puede ser "Male" o "Female".'});
+            }
+        }
+
+        if (description !== undefined && typeof description !== 'string'){
+            return res.status(400).json({message: 'El campo description debe ser una cadena de texto.'});
+        }
+
+        await character.update({name, ki, race, gender, description});
+
+        res.status(200).json(character);
+    } catch (error){
+        console.error(`Error al actualizar el personaje con ID ${req.params.id}:`, error);
+        res.status(500).json({message:'Error interno del servidor al actualizar el personaje.', error: error.message});
+    }
+ }
+
 export{
     getAllCharacters,
     getCharacterById,
-    createCharacter
+    createCharacter,
+    updatecharacter
 };
