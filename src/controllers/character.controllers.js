@@ -114,9 +114,28 @@ const createCharacter = async (req, res) => {
     }
  }
 
+ const deleteCharacter = async (req, res) => {
+    try {
+        const {id}= req.params;
+
+        const character = await Character,findByPk(id);
+        if (!character){
+            return res.status(404).json({message: `Personaje con ID ${id} no encontrado.`});
+        }
+
+        await character.destroy()
+
+        res.status(204).send();
+    } catch (error){
+        console.error(`Error al eliminar el personaje con ID ${req.params.id}:`, error);
+        res.status(500).json({message: 'Error interno del servidor al eliminar el personaje.', error: error.message});
+    }
+ };
+
 export{
     getAllCharacters,
     getCharacterById,
     createCharacter,
-    updatecharacter
+    updatecharacter,
+    deleteCharacter
 };
