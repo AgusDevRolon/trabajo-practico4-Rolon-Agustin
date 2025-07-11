@@ -64,7 +64,7 @@ const createCharacter = async (req, res) => {
         const {id} = req.params; 
         const {name, ki, race, gender, description} = req.body;
 
-        const character = await Character-findByPk(id);
+        const character = await Character.findByPk(id);
         if (!character){
             return res.status(404).json({message: `Presonaje con ID ${id} no encontrado.` });
         }
@@ -118,7 +118,7 @@ const createCharacter = async (req, res) => {
     try {
         const {id}= req.params;
 
-        const character = await Character,findByPk(id);
+        const character = await Character.findByPk(id);
         if (!character){
             return res.status(404).json({message: `Personaje con ID ${id} no encontrado.`});
         }
